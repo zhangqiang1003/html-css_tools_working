@@ -1,0 +1,837 @@
+@charset "utf-8";
+/*---------------------------------------------------------------------------------------*/
+//重置
+.reset(){
+    body, html,h1, h2,h3,h4,h5,h6,p,dl,dd,ol,ul,form, input,textarea,th,td,select { margin:0; padding:0;}
+    em,i { font-style:normal;}
+    li { list-style:none;}
+    a { text-decoration:none; cursor:pointer; }
+    a:focus {outline:none;}
+    img { border:none; vertical-align:top;}
+    input, textarea {vertical-align: middle;outline: none; border:none; background:none;box-sizing:content-box;}
+    textarea { resize:none; overflow:auto; }
+    table { border-spacing:0px; border:none; border-collapse:collapse;}    
+}
+.reset-font(){//字体的重置
+    body, input, select, button, textarea { font-size: 14px;font-family:tahoma,arial,'Hiragino Sans GB','\5b8b\4f53',sans-serif;background:#fff;}
+}
+
+/*---------------------------------------------------------------------------------------*/
+
+//文本溢出情况的两种处理方式
+/*单行文本的溢出显示省略号*/
+.p-single(@w:auto,@bg:transparent,@fs:14px,@ff:'微软雅黑'){
+    width:@w;
+    overflow: hidden;
+    font-size: @fs;
+    font-family:@ff;
+    text-overflow: ellipsis;
+    background:@bg;
+    white-space:nowrap;/*加宽度width属性来兼容部分浏览器*/
+}
+/*多行文本溢出显示省略号*/
+.p-double(@w:auto,@h:auto,@bg:transparent,@lc:3,@fs:14px,@ff:'微软雅黑'){
+    width:@w;height:@h;
+    overflow: hidden;
+    font-size: @fs;
+    font-family:@ff;
+    text-overflow: ellipsis;
+    background: @bg;
+    display:-webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp:@lc;//表示3行
+    /*
+     -webkti-line-clamp用来限制在一个块元素显示的文本行数。为了实现该效果，
+            他需要组合其他的webkit属性。
+            
+            常见的结合属性：
+            display：-webkit-box;必须结合的属性，讲对象作为弹性盒子模型显示。
+            -webkit-box-orient 必须结合的属性，设置或检索伸缩盒对象的子元素的排列方式。
+     * */
+}
+/*---------------------------------------------------------------------------------------*/
+
+//布局
+
+
+//注意：p--开头代表父元素，c--开头代表子元素
+/*---------------------------------------------------------------------------------------*/
+
+// 最小尺寸, 兼容IE6
+.min-width(@min-w) { min-width: @min-w; _width: @min-w; }
+.min-height(@min-h) { min-height: @min-h; _height: @min-h; }
+
+
+// 内联块级元素, 兼容IE6
+.dib() { display: inline-block; *display: inline; *zoom: 1; }
+
+// 固定定位, 兼容IE6
+.fixed() { position: fixed; _position: absolute; *zoom: 1; }
+
+// 统一盒模型
+.border-box() {
+  *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+}
+
+
+//水平居中
+/*
+ 方案1
+ 利用：inline-block + text-align
+ * */
+.p-h-center-1(@c:center){
+    text-align:@c;
+}
+.c-h-center-1(@ib:inline-block){
+    display:@ib;
+}
+
+/*
+ 方案2
+ 利用：table + margin
+ * */
+.c-h-center-2(@t:0px){
+    display: table;
+    margin:@t auto;
+}
+
+/*
+ 方案4
+ 注意：方案3因为transform的兼容性 限制，因此如果
+ 在子元素为定宽的情况下，可以对子元素使用绝对定位，兼容性极佳
+ 
+ * */
+.p-h-center-4(@h:100px){
+    position: relative;
+    height:@h;
+}
+.c-h-center-4(@w:100px,@ta:center){
+    position: absolute;
+    width:@w;
+    left: 50%;
+    margin-left:-@w/2;
+    text-align:@ta;//子元素内部的内容居中
+}
+
+/*
+ 方案5
+ 弹性盒
+ 注意：兼容性不太好，目前很少用
+ 利用： flex + justify-content
+ * */
+.p-h-center-5(@h:100px,@jc:center){
+    display:flex;
+    justify-content:@jc;
+    height:@h;
+}
+.c-h-center-5(@t:0px){
+    margin:@t auto;
+}
+
+
+/*---------------------------------------------------------------------------------------*/
+
+//垂直居中
+/*
+ 方案1
+ 利用：height和line-height相等
+ * */
+.v-center-1(@h:100px){
+    height:@h;
+    line-height:@h;
+}
+
+/*
+ 方案2：
+ 利用： table-cell + vertial-align
+ 兼容性良好；
+ * */
+.p-v-center-2(){
+    display:table-cell;
+    vertical-align:middle;
+}
+
+/*
+ 方案3：
+ 利用：absolute + transform
+存在css3兼容性问题，定宽兼容性良好
+ * */
+.p-v-center-3(){
+    position: relative;
+}
+.c-v-center-3(@h:100px){
+    height:@h;
+    position: absolute;
+    top:50%;
+    transform: translateY(-50%);
+}
+
+/*---------------------------------------------------------------------------------------*/
+
+//水平垂直
+/*
+ 方案1：
+ 利用： inline-block + table-cell + text-align + vertical-align
+ 注意：兼容至ie8
+ * */
+.p-v-h-center-1(@w:auto,@bg:#fff,@br:0px){
+    width:@w;
+    background-color: @bg;
+    border-radius:@br;
+    text-align: center;
+    display: table-cell;
+    vertical-align:middle;
+}
+.c-v-h-center-1(){
+    display:inline-block;
+}
+
+/*
+ 方案2
+ 利用：absolute + transform
+ 注意：兼容性稍差，兼容IE10以上
+ * */
+.p-v-h-center-2(@w:auto,@bg:#fff,@br:0px){
+    position: relative;
+    width:@w;
+    background-color: @bg;
+    border-radius:@br;
+}
+
+.c-v-h-center-2(){
+    position: absolute;
+    left:50%;top:50%;
+    transform: translate(-50%,-50%);
+}
+
+/*
+ 方案3
+ 利用：flex
+ 注意：兼容性差
+ * */
+.p-v-h-center-2(@w:200px,@bg:#fff,@br:0px){
+    width:@w;
+    background-color: @bg;
+    border-radius:@br;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+////////////////////////////////////////////////////////////
+
+//一列定宽，一列自适应
+//部分分为left和right两部分
+/*
+ 方案1
+ 利用：float+margin
+ 注意：此方案对于定宽布局比较好，不定宽布局推荐下一种方法；
+ * */
+.fix-layout-left-1(@w:100px,@bg:#fff){
+    float:left;
+    width:@w;
+    background-color: @bg;
+}
+
+.auto-layout-right-1(@w:100px,@wbc:110px,@bg:#fff){
+    margin-left:@wbc;
+    width:@w;
+    background-color:@bg;
+}
+
+/*
+ 方案2：
+ 利用：float+overflow
+ 注意：该方案无论定宽还是不定宽，都可以完美实现，同时可以实现等高布局；
+ * */
+.fix-layout-left-2(@w:100px,@bg:#fff,@mgr:20px){
+    float:left;
+    width:@w;
+    background-color: @bg;
+    margin-right:@mgr;
+}
+
+.auto-layout-right-2(@w:100px,@bg:#fff){
+    width:@w;
+    background-color:@bg;
+    overflow: hidden;
+}
+
+
+/*
+ 方案3
+ 利用：table
+ * */
+.p-layout-1(@w:100%){//父元素
+    display: table;width:@w;
+    table-layout: fixed;
+}
+//定宽的子元素
+.fix-layout-left-3(@w:100px,@pdr:20px){
+    display: table-cell;
+    width:@w;
+    padding-right:@pdr;
+}
+//不定宽的子元素
+.auto-layout-right-3(){
+    display: table-cell;
+}
+
+/*
+ 方案4
+ 利用：flex
+ * */
+.p-layout-2(){//父元素
+    display: flex;
+}
+.fix-layout-left-4(@w:100px,@pdr:20px){;
+    width:@w;
+    padding-right:@pdr;
+}
+.auto-layout-right-4(){
+    flex:1;
+}
+/////////////////////////////////////////////////////////
+
+//多列定宽，一列自适应
+//布局分为left，center和right三部分
+/*
+ 方案1
+ 利用：float+overflow
+ * */
+.fix-layout-three-left-1(@w:100px,@mgr:10px,@bg:#fff){
+    float:left;
+    width:@w;
+    margin-right:@mgr;
+    background-color: @bg;
+};
+.fix-layout-three-center-1(@w:100px,@mgr:10px,@bg:#fff){
+    float:left;
+    width:@w;
+    margin-right:@mgr;
+    background-color: @bg;
+};
+.auto-layout-three-right-1(@bg:#fff){
+    overflow: hidden;
+    background-color: @bg;
+};
+
+/*
+ 方案2
+ 利用：table
+ 注意:使用该方法，三个模块是紧挨在一起的，因此需要在各自的内部在单独嵌套原始，才能形成间隔
+ * */
+.p-layout-three-2(){
+    display:table;width:100%;
+    table-layout: fixed;
+}
+.fix-layout-three-right-2(@w:100px,@pdr:20px,@bg:#fff){
+    display: table-cell;
+    width:@w;
+    padding-right:@pdr;
+    background-color: @bg;
+}
+.auto-layout-three-left-2(@bg:#fff,@pdt:0px,@pdl:10px){
+    display: table-cell;
+    background-color: @bg;
+    //margin-right:@mgr;//margin失效
+    padding:@pdt @pdl;
+}
+.auto-layout-three-center-2(@bg:#fff,@pdt:0px,@pdl:10px){
+    display: table-cell;
+    background-color: @bg;
+    //margin-right:@mgr;//margin失效
+    padding:@pdt @pdl;
+};
+
+/*
+ 方案3
+ 利用：flex
+ * */
+.p-layout-three-3(){
+    display: flex;
+}
+.fix-layout-three-left-3(@w:100px,@bg:#fff,@pdr:10px){   
+    width:@w;
+    padding-right:@pdr;
+    background-color: @bg;
+}
+.fix-layout-three-center-3(@w:100px,@bg:#fff,@pdr:10px){   
+    width:@w;
+    padding-right:@pdr;
+    background-color: @bg;
+}
+.auto-layout-three-right-3(@bg:#fff){
+    flex:1;   
+    background-color: @bg;
+}
+
+//////////////////////////////////////////////////////////////////
+
+//一列不定宽，一列自适应
+//不定宽的元素是由其子元素撑起来的
+//为避免和其他类名重复，再类名中加入f做区分
+/*
+ 方案1
+ 利用：float+overflow
+ * 
+ * */
+.nofix-layout-left-f-1(@mgr:20px,@bg:#fff){
+    float:left;
+    margin-right:@mgr;
+    background-color: @bg;
+}
+//不定宽元素的子元素
+.nofix-layout-child-f-1(@w:100px,@bg:#fff){
+    width:@w;
+    background-color: @bg;
+}
+.auto-layout-right-f-1(@bg:#fff){
+    overflow: hidden;
+    background-color: @bg;
+}
+
+/*
+ 方案2
+ 利用：table
+ * */
+.p-layout-f-2(@bg:#fff){
+    display: table;width: 100%;
+    background-color: @bg;
+}
+.nofix-layout-left-f-2(@pdr:20px,@bg:#fff){
+    display: table-cell;
+    width:0.1%;
+    padding-right:@pdr;
+    background-color: @bg;
+}
+//不定宽元素的子元素
+.nofix-layout-child-f-2(@w:100px,@bg:#fff){
+    width:@w;
+    background-color: @bg;
+}
+.auto-layout-right-f-2(@bg:#fff){
+    display: table-cell;
+    background-color: @bg;
+}
+
+///////////////////////////////////////////////////////////////
+
+//多列不定宽，一列自适应
+//不定宽的元素是由其子元素撑起来的
+//为避免和其他类名重复，再类名中加入g做区分
+
+/*
+ 方案1
+ 利用：float+overflow
+ * */
+//不定宽元素
+.nofix-layout-g-1(@mgr:20px,@bg:#fff){
+     float: left;
+     margin-right:@mgr;
+     background-color: @bg;
+}
+//不定宽元素的子元素
+.nofix-layout-child-g-1(@w:100px,@bg:#fff){
+    width:@w;
+    background-color: @bg;
+}
+//自适应元素
+.auto-layout-g-1(@bg:#fff){
+    overflow: hidden;
+    background-color: @bg;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+//等分
+//为避免和其他类名重复，再类名中加入k做区分
+/*
+ 方案1
+ 利用：float+margin
+ * */
+//父元素
+.p-layout-k-1(@mgl:-20px,@bg:#fff){
+    margin-left:@mgr;
+    background-color: @bg;
+}
+//子元素
+.column-layout-k-1(@w:25%,@pdl:20px,@bg:#fff){
+    float: left;
+    width:@w;
+    padding-left:@pdl;
+    background-color: @bg;
+    box-sizing: border-box;
+}
+
+
+// 遮罩层, 全屏遮罩、区域遮罩
+.over-screen(fixed) { .fixed(); top: 0; left: 0; right: 0; bottom: 0; }
+.over-screen(absolute) { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+
+// 容器宽高比固定
+// 100* 1/1 = 100%
+// 100* 3/4 = 75%
+.fixed-ratio(@padding-top: 100%) {
+  position: relative; width: 100%; height: 0; padding-top: @padding-top;
+  img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+}
+
+// 定宽居中页面布局--版心
+.layout-page(@width: 1200px) { width: @width; margin-left: auto; margin-right: auto; }
+
+
+/////////////////////////////////////////////////////////////////////////////////
+
+//字体
+
+////////////////////////////////////////////////////////////////////////////////////
+
+// 字体颜色 + 自身 Hover
+.color(@color, @hovercolor) {
+  color: @color;
+  &:hover { color: @hovercolor; }
+}
+
+
+// 字体颜色 + 链接 Hover
+.color(@color, @acolor, @hovercolor) {
+  color: @color;
+  a {
+    color: @acolor;
+    &:hover { color: @hovercolor; }
+  }
+}
+
+
+// 文字隐藏（常用于SEO优化）
+// <a href="" title="Logo SEO 优化 "><h1 class="logo">xx</h1></a>
+.hidden-text() { text-indent : -9999px; overflow: hidden; text-align: left; }
+
+/////////////////////////////////////////////////////////////////////
+
+///图像
+
+////////////////////////////////////////////////////////////////////////
+
+// 用 max-width 来防止图片撑破容器
+.max-img() { display: block; max-width: 100%; height: auto; }
+
+// 2x 3x 背景图片
+.bg-image(@url) {
+  background-image: url("@url + '@2x.png'");
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    background-image: url("@url + '@3x.png'");
+  }
+}
+
+// 全屏大图背景
+.fullscreen-bg(@url) {
+  width: 100vw;
+  height: 100vh;
+  background: url(@url) no-repeat 50% 50%;
+  background-size: cover;
+}
+
+// 滤镜: 将彩色照片显示为黑白照片
+.grayscale() {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+}
+
+/////////////////////////////////////
+
+//hover效果
+
+///////////////////////////////////
+
+// 链接默认无下划线，hover后有下划线的样式
+.hover-link() {
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// 将链接变成默认的文字样式
+.unstyled-link() {
+  color: inherit;
+  cursor: inherit;
+  text-decoration: inherit;
+  &:active, &:focus { outline: none; }
+}
+
+// 盒子阴影
+// box-shadow: 水平阴影的位置, 垂直阴影的位置, 模糊距离, 阴影的大小, 阴影的颜色, 阴影开始方向（默认是从里往外，设置inset就是从外往里）;
+// box-shadow: h-shadow v-shadow blur spread color inset;
+.box-shadow() {
+  box-shadow: 0px 14px 26px 0px rgba(0, 0, 0, 0.1);
+}
+
+// 盒子 Hover
+.box-hover() {
+  // box-shadow: 0px 1px 2px 0px rgba(84, 107, 107, .4);
+  transition: all .2s linear;
+  &:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.box-hover2() {
+  transition: transform .5s ease;
+  &:hover {
+    transform: translateX(10px);
+  }
+}
+
+
+///////////////////
+
+//常用功能
+
+////////////////////
+
+// 浮动, 兼容 IE6
+.fl() { float: left; *display: inline; _display:inline; }
+.fr() { float: right; *display: inline; _display:inline; }
+
+// 清除浮动
+.clearfix() {
+  *zoom: 1;
+  &:after { display: block; clear: both; content: ''; visibility: hidden; height: 0; }
+}
+.clearfix(table) {
+  *zoom: 1;
+  &:before, &:after { content: " "; display: table; clear: both; }
+}
+
+// 禁止文本被选择
+.user-select() { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+// 隐藏鼠标手势
+.hide-cursor() { cursor: none !important; }
+
+// 鼠标禁用样式，但仍然可以触发事件
+// <input type="text" disabled="disabled">
+.disabled() { cursor: not-allowed; }
+
+// 禁用元素事件
+// 1. 阻止任何点击动作的执行
+// 2. 使链接显示为默认光标(cursor:default)
+// 3. 阻止触发hover和active状态
+// 4. 阻止JavaScript点击事件的触发
+.pointer-events() { pointer-events: none; }
+
+// 模糊
+.blur(@blur: 10px) {
+  filter: blur(@blur);
+  -webkit-filter: blur(@blur);
+  -moz-filter: blur(@blur);
+  -o-filter: blur(@blur);
+  -ms-filter: blur(@blur);
+  filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='@{blur}');
+  *zoom: 1;
+}
+
+// 透明度, 兼容 IE8
+.opacity(@opacity: 20) { opacity: @opacity / 100; filter: alpha(opacity=@opacity); }
+
+// 用伪类来显示打印时 a 标签的链接
+.print-link() {
+  @media print {
+    a[href]:after { content: " (" attr(href) ") "; }
+  }
+}
+
+// 隔行换色
+.zebra-lists(odd, @color) {
+  &.odd {
+    >li:nth-child(odd) { background-color: @color; }
+  }
+}
+.zebra-lists(even, @color) {
+  &.even {
+    >li:nth-child(even) { background: green; }
+  }
+}
+
+// 首字下沉
+.first-letter(@font-size: 6em) {
+  &::first-letter{
+    float: left;
+    line-height: 1;
+    font-size: @font-size;
+  }
+}
+
+// 特殊标记段落第一行
+.first-line() {
+  &::first-line{
+    color: red
+  }
+}
+
+// 美化选中文本
+.beauty-select() {
+  &::selection{
+   color: #fff;
+   background-color: #6bc30d;
+   text-shadow: none;
+  }
+}
+
+// 美化占位符 placeholder 样式
+.beauty-placeholder(@fz, @color: #999, @align: left) {
+  &:-moz-placeholder { font-size: @fz; color: @color; text-align: @align; }
+  &:-ms-input-placeholder { font-size: @fz; color: @color; text-align: @align; }
+  &::-webkit-input-placeholder { font-size: @fz; color: @color; text-align: @align; }
+}
+
+// 美化占位符 placeholder 样式（自定义属性和值）
+.beauty-placeholder(custom, @property, @value) {
+  &:-moz-placeholder { @{property}: @value; }
+  &:-ms-input-placeholder { @{property}: @value; }
+  &::-webkit-input-placeholder { @{property}: @value; }
+}
+
+//////////////
+
+//导航栏的三角形；
+
+/////////////////////
+
+// 三角形
+.triangle(@width: 4px,@color: #000) {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+  border-top: @width solid @color;
+  border-left: @width solid transparent;
+  border-right: @width solid transparent;
+}
+
+// 三角形箭头气泡效果, IE6-7 无表现
+.arrow(top, @w: 10px, @color, @x: 50%) {
+  position: relative;
+  &:before { position: absolute; bottom: 100%; left: @x; content: " "; height: 0; width: 0; pointer-events: none; border-style: solid; border-color: transparent; border-bottom-color: @color; border-width: unit(@w, px); @margin: -@w; margin-left: unit(@margin, px); }
+}
+.arrow(right, @w: 10px, @color, @y: 50%) {
+  position: relative;
+  &:before { position: absolute; left: 100%; top: @y; content: " "; height: 0; width: 0; pointer-events: none; border-style: solid; border-color: transparent; border-left-color: @color; border-width: unit(@w, px); @margin: -@w; margin-top: unit(@margin, px); }
+}
+.arrow(bottom, @w: 10px, @color, @x: 50%) {
+  position: relative;
+  &:before { position: absolute; top: 100%; left: @x; content: " "; height: 0; width: 0; pointer-events: none; border-style: solid; border-color: transparent; border-top-color: @color; border-width: unit(@w, px); @margin: -@w; margin-left: unit(@margin, px); }
+}
+.arrow(left, @w: 10px, @color, @y: 50%) {
+  position: relative;
+  &:before { position: absolute; right: 100%; top: @y; content: " "; height: 0; width: 0; pointer-events: none; border-style: solid; border-color: transparent; border-right-color: @color; border-width: unit(@w, px); @margin: -@w; margin-top: unit(@margin, px); }
+}
+
+// 三角形箭头气泡效果, 带边框
+.arrow-with-border(top, @w: 10px, @color, @border-w: 1px, @border-color, @x: 50%) {
+  position: relative;
+  &:before, &:after { bottom: 100%; left: @x; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; border-style: solid; border-color: transparent; }
+  &:after { border-bottom-color: @color; border-width: unit(@w, px); @margin: -@w; margin-left: unit(@margin, px); }
+  &:before { border-bottom-color: @border-color; @arrbo: @w+@border-w; border-width: unit(@arrbo, px); @margin-bo: -@arrbo; margin-left: unit(@margin-bo, px); }
+}
+.arrow-with-border(bottom, @w: 10px, @color, @border-w: 1px, @border-color, @x: 50%) {
+  position: relative;
+  &:before, &:after { top: 100%; left: @x; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; border-style: solid; border-color: transparent; }
+  &:after { border-top-color: @color; border-width: unit(@w, px); @margin: -@w; margin-left: unit(@margin, px); }
+  &:before { border-top-color: @border-color; @arrbo: @w+@border-w; border-width: unit(@arrbo, px); @margin-bo: -@arrbo; margin-left: unit(@margin-bo, px); }
+}
+.arrow-with-border(left, @w: 10px, @color, @border-w: 1px, @border-color, @y: 50%) {
+  position: relative;
+  &:before, &:after { top: @y; right: 100%; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; border-style: solid; border-color: transparent; }
+  &:after { border-right-color: @color; border-width: unit(@w, px); @margin: -@w; margin-top: unit(@margin, px); }
+  &:before { border-right-color: @border-color; @arrbo: @w+@border-w; border-width: unit(@arrbo, px); @margin-bo: -@arrbo; margin-top: unit(@margin-bo, px); }
+}
+.arrow-with-border(right, @w: 10px, @color, @border-w: 1px, @border-color, @y: 50%) {
+  position: relative;
+  &:before, &:after { top: @y; left: 100%; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; border-style: solid; border-color: transparent; }
+  &:after { border-left-color: @color; border-width: unit(@w, px); @margin: -@w; margin-top: unit(@margin, px); }
+  &:before { border-left-color: @border-color; @arrbo: @w+@border-w; border-width: unit(@arrbo, px); @margin-bo: -@arrbo; margin-top: unit(@margin-bo, px); }
+}
+
+/////////////
+
+//功能组件
+
+////////////
+
+// 吸顶导航
+.fix-header(@h: 70px) {
+  .fixed();
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: @h;
+  z-index: 1000;
+  // background-color: rgba(256, 256, 256, .92);
+  // border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+  // box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+}
+
+// 吸底导航
+.fix-header(@h: 70px) {
+  .fixed();
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: @h;
+  z-index: 1000;
+}
+
+// 输入框
+.input-text() {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1.42858;
+  color: #333;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 3px;
+}
+
+// 关闭按钮
+// <button class="close" type="button"><span>&times;</span></button>
+.close() {
+  position: relative;
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  filter: alpha(opacity=20);
+  opacity: .2;
+  &:hover {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    filter: alpha(opacity=50);
+    opacity: .5;
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+  &:focus{
+    outline: none;
+  }
+}
