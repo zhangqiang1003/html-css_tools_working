@@ -2,52 +2,54 @@
 /*---------------------------------------------------------------------------------------*/
 //重置
 .reset(){
-    body, html,h1, h2,h3,h4,h5,h6,p,dl,dd,ol,ul,form, input,textarea,th,td,select { margin:0; padding:0;}
-    em,i { font-style:normal;}
-    li { list-style:none;}
-    a { text-decoration:none; cursor:pointer; }
+    body,html,h1,h2,h3,h4,h5,h6,p,dl,dd,ol,ul,form,input,textarea,th,td,select {margin:0; padding:0;}
+    em,i {font-style:normal;}
+    li {list-style:none;}
+    a {text-decoration:none; cursor:pointer;}
     a:focus {outline:none;}
-    img { border:none; vertical-align:top;}
-    input, textarea {vertical-align: middle;outline: none; border:none; background:none;box-sizing:content-box;}
-    textarea { resize:none; overflow:auto; }
-    table { border-spacing:0px; border:none; border-collapse:collapse;}    
+    img {border:none; vertical-align:top;}
+    input, textarea {vertical-align: middle;outline: none;border: none; background: none;box-sizing: content-box;}
+    textarea {resize:none; overflow:auto;}
+    table {border-spacing: 0px;border: none;border-collapse: collapse;}    
 }
-.reset-font(){//字体的重置
-    body, input, select, button, textarea { font-size: 14px;font-family:tahoma,arial,'Hiragino Sans GB','\5b8b\4f53',sans-serif;background:#fff;}
+.reset-font(){
+    body,input,select,button,textarea {font-size: 14px;font-family: Microsoft YaHei,arial,'Hiragino Sans GB','\5b8b\4f53',sans-serif;background: #fff;}
 }
+.user-select() { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+// 统一盒模型
+.border-box() {
+    *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+}
+
 
 /*---------------------------------------------------------------------------------------*/
 
 //文本溢出情况的两种处理方式
 /*单行文本的溢出显示省略号*/
-.p-single(@w:auto,@bg:transparent,@fs:14px,@ff:'微软雅黑'){
-    width:@w;
+.p-single(@w:auto){
+    width: @w;
     overflow: hidden;
-    font-size: @fs;
-    font-family:@ff;
     text-overflow: ellipsis;
-    background:@bg;
-    white-space:nowrap;/*加宽度width属性来兼容部分浏览器*/
+    white-space: nowrap;/*加宽度width属性来兼容部分浏览器*/
 }
 /*多行文本溢出显示省略号*/
-.p-double(@w:auto,@h:auto,@bg:transparent,@lc:3,@fs:14px,@ff:'微软雅黑'){
-    width:@w;height:@h;
+.p-double(@w:auto,@h:auto,@lc:3){
+    width: @w;
+    height: @h;
     overflow: hidden;
-    font-size: @fs;
-    font-family:@ff;
     text-overflow: ellipsis;
-    background: @bg;
     display:-webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp:@lc;//表示3行
+    -webkit-line-clamp: @lc;//表示3行
     /*
      -webkti-line-clamp用来限制在一个块元素显示的文本行数。为了实现该效果，
             他需要组合其他的webkit属性。
             
             常见的结合属性：
-            display：-webkit-box;必须结合的属性，讲对象作为弹性盒子模型显示。
+            display：-webkit-box;必须结合的属性，将对象作为弹性盒子模型显示。
             -webkit-box-orient 必须结合的属性，设置或检索伸缩盒对象的子元素的排列方式。
-     * */
+    * */
 }
 /*---------------------------------------------------------------------------------------*/
 
@@ -67,11 +69,6 @@
 
 // 固定定位, 兼容IE6
 .fixed() { position: fixed; _position: absolute; *zoom: 1; }
-
-// 统一盒模型
-.border-box() {
-  *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
-}
 
 
 //水平居中
@@ -284,7 +281,7 @@
 .p-layout-2(){//父元素
     display: flex;
 }
-.fix-layout-left-4(@w:100px,@pdr:20px){;
+.fix-layout-left-4(@w:100px,@pdr:20px){
     width:@w;
     padding-right:@pdr;
 }
